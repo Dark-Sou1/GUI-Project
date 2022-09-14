@@ -273,13 +273,13 @@ class App(customtkinter.CTk):
         self.frame_right.pack_propagate(False)
 
         self.entry_departure = customtkinter.CTkEntry(master=self.frame_right,width=400,placeholder_text="Enter departure")
-        self.entry_departure.pack(pady=30,padx=20,side = "left",anchor="n")
+        self.entry_departure.grid(row=0,column=0,pady=10,padx=10)
 
-        self.button_search = customtkinter.CTkButton(master=self.frame_right,text="Search",width=150,command=self.search_departure)
-        self.button_search.pack(pady=30,padx=20,side = "right",anchor="n")
-
-        
-
+        self.button_search = customtkinter.CTkButton(master=self.frame_right,text="Search",width=120,command=self.search_departure)
+        self.button_search.grid(row=0,column=1,pady=10,padx=10)
+    
+    def on_click(self, event):
+        print("clicked")
         
     def search_departure(self):
         self.data_dep = self.entry_departure.get()
@@ -287,9 +287,12 @@ class App(customtkinter.CTk):
         self.list_of_deps = []
         for i in s:
             self.list_of_deps.append(i['name'])
-        print(self.list_of_deps)
-
-        
+        c = 1
+        for i in self.list_of_deps:
+            self.canvas1 = customtkinter.CTkCanvas(master=self.frame_right, width=600, height=40,highlightbackground=f"{self.color_2}")
+            self.canvas1.bind("<Button-1>", self.on_click)
+            self.canvas1.grid(row=c,column=0,pady=5,padx=10)
+            c += 1
         
         
     def nol_display(self):
@@ -336,7 +339,7 @@ class App(customtkinter.CTk):
 
         for widgets in self.frame_right.winfo_children():
             widgets.destroy()
-        
+
         transactions = rtadubai.Nol.transactions(self.nol_id)['Transactions']
         if len(transactions)==0:
             self.frame_right.pack_propagate(False)
