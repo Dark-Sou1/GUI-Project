@@ -7,8 +7,7 @@ import hashlib
 from PIL import Image, ImageTk
 import os
 
-customtkinter.set_appearance_mode("System")
-
+customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue") 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -244,6 +243,12 @@ class App(customtkinter.CTk):
         self.button_salik = customtkinter.CTkButton(master=self.frame_left,text="Salik",height=32,command=self.salik_display)
         self.button_salik.pack(pady=10,padx=10)
 
+        self.button_departure = customtkinter.CTkButton(master=self.frame_left,text="Departure",height=32,command=self.departure_display)
+        self.button_departure.pack(pady=10,padx=10)
+        
+        self.button_journey = customtkinter.CTkButton(master=self.frame_left,text="Journey",height=32,command=self.journey_display)
+        self.button_journey.pack(pady=10,padx=10)
+
         self.settings_button = customtkinter.CTkButton(master=self.frame_left, image=self.settings_image, text="settings", width=40, height=40,
                                                 corner_radius=10, fg_color=f"{self.color_2}", hover_color=f"{self.color_3}", text_font=("Roboto Medium", -13),
                                                 command=self.settings)
@@ -254,12 +259,45 @@ class App(customtkinter.CTk):
         self.nol_display()
 
         # ============ frame right ============
+    
+    def journey_display(self):
 
-    def nol_display(self):
         for widgets in self.frame_right.winfo_children():
             widgets.destroy()
 
-        self.nol = rtadubai.Nol.Card(int(self.nol_id))
+    def departure_display(self):
+
+        for widgets in self.frame_right.winfo_children():
+            widgets.destroy()
+        
+        self.frame_right.pack_propagate(False)
+
+        self.entry_departure = customtkinter.CTkEntry(master=self.frame_right,width=400,placeholder_text="Enter departure")
+        self.entry_departure.pack(pady=30,padx=20,side = "left",anchor="n")
+
+        self.button_search = customtkinter.CTkButton(master=self.frame_right,text="Search",width=150,command=self.search_departure)
+        self.button_search.pack(pady=30,padx=20,side = "right",anchor="n")
+
+        
+
+        
+    def search_departure(self):
+        self.data_dep = self.entry_departure.get()
+        s = rtadubai.Shail.findstop(self.data_dep)
+        self.list_of_deps = []
+        for i in s:
+            self.list_of_deps.append(i['name'])
+        print(self.list_of_deps)
+
+        
+        
+        
+    def nol_display(self):
+
+        for widgets in self.frame_right.winfo_children():
+            widgets.destroy()
+
+        self.nol = rtadubai.Nol.Card(self.nol_id)
 
         self.nol_label = customtkinter.CTkLabel(master=self.frame_right,text="Nol",text_font=("Roboto Medium", -21))
         self.nol_label.pack(pady=20,padx =0, anchor="n")
@@ -299,60 +337,64 @@ class App(customtkinter.CTk):
         for widgets in self.frame_right.winfo_children():
             widgets.destroy()
         
-        self.scroll_canvas = customtkinter.CTkCanvas(master=self.frame_right,highlightbackground=f"{self.color_2}")
-        self.scroll_canvas.pack(fill="both",expand=True,side= "left")
+        transactions = rtadubai.Nol.transactions(self.nol_id)['Transactions']
+        if len(transactions)==0:
+            self.frame_right.pack_propagate(False)
+            self.transaction_label = customtkinter.CTkLabel(master=self.frame_right,text="No transactions found",text_font=("Roboto Medium", 20))
+            self.transaction_label.pack(padx=100)
+        else:
+            self.scroll_canvas = customtkinter.CTkCanvas(master=self.frame_right,highlightbackground=f"{self.color_2}")
+            self.scroll_canvas.pack(fill="both",expand=True,side= "left")
 
-        my_scroll = customtkinter.CTkScrollbar(master=self.frame_right,orientation="vertical",command=self.scroll_canvas.yview)
-        my_scroll.pack(fill="y",side="right")
+            my_scroll = customtkinter.CTkScrollbar(master=self.frame_right,orientation="vertical",command=self.scroll_canvas.yview)
+            my_scroll.pack(fill="y",side="right")
 
-        self.scroll_canvas.configure(yscrollcommand=my_scroll.set)
-        self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
+            self.scroll_canvas.configure(yscrollcommand=my_scroll.set)
+            self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
 
-        self.transaction_frame = customtkinter.CTkFrame(master=self.scroll_canvas,corner_radius=0)
+            self.transaction_frame = customtkinter.CTkFrame(master=self.scroll_canvas,corner_radius=0)
 
-        self.scroll_canvas.create_window((0,0),window=self.transaction_frame,anchor="nw",width=700)
+            self.scroll_canvas.create_window((0,0),window=self.transaction_frame,anchor="nw",width=700)
+            for i in transactions:
+                self.temp_frame = customtkinter.CTkFrame(master=self.transaction_frame,width=520,height=300)
+                self.temp_frame.pack(anchor="w",padx=10,pady=10)
+                self.temp_frame.pack_propagate(False)
 
-        for i in rtadubai.Nol.transactions("1002338984")['Transactions']:
+                self.frame_frame_1 = customtkinter.CTkFrame(master=self.temp_frame)
+                self.frame_frame_1.pack(anchor="center",fill="x",padx=10,pady=10)
 
-            self.temp_frame = customtkinter.CTkFrame(master=self.transaction_frame,width=520,height=300)
-            self.temp_frame.pack(anchor="w",padx=10,pady=10)
-            self.temp_frame.pack_propagate(False)
+                self.temp_label_11 = customtkinter.CTkLabel(master=self.frame_frame_1,text="Date:",text_font=("Roboto Medium", 10))
+                self.temp_label_11.pack(side="left",padx=10,pady=10)
 
-            self.frame_frame_1 = customtkinter.CTkFrame(master=self.temp_frame)
-            self.frame_frame_1.pack(anchor="center",fill="x",padx=10,pady=10)
+                self.temp_label_1 = customtkinter.CTkLabel(master=self.frame_frame_1,text=i['Date'],text_font=("Roboto Medium", 18))
+                self.temp_label_1.pack(side="left",padx=10,pady=10)
 
-            self.temp_label_11 = customtkinter.CTkLabel(master=self.frame_frame_1,text="Date:",text_font=("Roboto Medium", 10))
-            self.temp_label_11.pack(side="left",padx=10,pady=10)
+                self.frame_frame_2 = customtkinter.CTkFrame(master=self.temp_frame)
+                self.frame_frame_2.pack(anchor="center",fill="x",padx=10,pady=10)
 
-            self.temp_label_1 = customtkinter.CTkLabel(master=self.frame_frame_1,text=i['Date'],text_font=("Roboto Medium", 18))
-            self.temp_label_1.pack(side="left",padx=10,pady=10)
+                self.temp_label_22 = customtkinter.CTkLabel(master=self.frame_frame_2,text="Time:",text_font=("Roboto Medium", 10))
+                self.temp_label_22.pack(side="left",padx=10,pady=10)
 
-            self.frame_frame_2 = customtkinter.CTkFrame(master=self.temp_frame)
-            self.frame_frame_2.pack(anchor="center",fill="x",padx=10,pady=10)
+                self.temp_label_2 = customtkinter.CTkLabel(master=self.frame_frame_2,text=i['Time'],text_font=("Roboto Medium", 18))
+                self.temp_label_2.pack(side="left",padx=10,pady=10)
 
-            self.temp_label_22 = customtkinter.CTkLabel(master=self.frame_frame_2,text="Time:",text_font=("Roboto Medium", 10))
-            self.temp_label_22.pack(side="left",padx=10,pady=10)
+                self.frame_frame_3 = customtkinter.CTkFrame(master=self.temp_frame)
+                self.frame_frame_3.pack(anchor="center",fill="x",padx=10,pady=10)
 
-            self.temp_label_2 = customtkinter.CTkLabel(master=self.frame_frame_2,text=i['Time'],text_font=("Roboto Medium", 18))
-            self.temp_label_2.pack(side="left",padx=10,pady=10)
+                self.temp_label_33 = customtkinter.CTkLabel(master=self.frame_frame_3,text="Amount:",text_font=("Roboto Medium", 10))
+                self.temp_label_33.pack(side="left",padx=10,pady=10)
 
-            self.frame_frame_3 = customtkinter.CTkFrame(master=self.temp_frame)
-            self.frame_frame_3.pack(anchor="center",fill="x",padx=10,pady=10)
+                self.temp_label_3 = customtkinter.CTkLabel(master=self.frame_frame_3,text=i['Amount'],text_font=("Roboto Medium", 18))
+                self.temp_label_3.pack(side="left",padx=10,pady=10)
 
-            self.temp_label_33 = customtkinter.CTkLabel(master=self.frame_frame_3,text="Amount:",text_font=("Roboto Medium", 10))
-            self.temp_label_33.pack(side="left",padx=10,pady=10)
+                self.frame_frame_4 = customtkinter.CTkFrame(master=self.temp_frame)
+                self.frame_frame_4.pack(anchor="center",fill="x",padx=10,pady=10)
 
-            self.temp_label_3 = customtkinter.CTkLabel(master=self.frame_frame_3,text=i['Amount'],text_font=("Roboto Medium", 18))
-            self.temp_label_3.pack(side="left",padx=10,pady=10)
-
-            self.frame_frame_4 = customtkinter.CTkFrame(master=self.temp_frame)
-            self.frame_frame_4.pack(anchor="center",fill="x",padx=10,pady=10)
-
-            self.temp_label_44 = customtkinter.CTkLabel(master=self.frame_frame_4,text="Type:",text_font=("Roboto Medium", 10))
-            self.temp_label_44.pack(side="left",padx=10,pady=10)
-            self._text,self._size = self._split(i['Type'])
-            self.temp_label_4 = customtkinter.CTkLabel(master=self.frame_frame_4,text=self._text,text_font=("Roboto Medium", self._size))
-            self.temp_label_4.pack(side="left",padx=10,pady=10)
+                self.temp_label_44 = customtkinter.CTkLabel(master=self.frame_frame_4,text="Type:",text_font=("Roboto Medium", 10))
+                self.temp_label_44.pack(side="left",padx=10,pady=10)
+                self._text,self._size = self._split(i['Type'])
+                self.temp_label_4 = customtkinter.CTkLabel(master=self.frame_frame_4,text=self._text,text_font=("Roboto Medium", self._size))
+                self.temp_label_4.pack(side="left",padx=10,pady=10)
 
     def _split(self,text):
         if len(text)>38:
