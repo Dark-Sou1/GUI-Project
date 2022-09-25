@@ -374,10 +374,7 @@ class App(customtkinter.CTk):
 
         self.frame_dropdown.configure(height=720)
         self.frame_dropdown.update()
-        s = rtadubai.Shail.findstop(self.data_dep)
-        self.list_of_deps = []
-        for i in s:
-            self.list_of_deps.append(i['name'])
+        self.list_of_deps = rtadubai.Shail.stopnames(self.data_dep)
         c = 2
         for i in self.list_of_deps:
             self.label_deps_dropdown = customtkinter.CTkButton(
