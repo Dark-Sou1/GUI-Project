@@ -1,3 +1,4 @@
+from re import search
 import time
 import tkinter
 import tkinter.messagebox
@@ -34,7 +35,7 @@ class App(customtkinter.CTk):
         self.color_3 = "gray25"
         self.title("TravelManager")
         self.iconphoto(True, tkinter.PhotoImage(
-            file=r"assets\images\logo_white.png"))
+            file=PATH+r"\assets\images\logo_white.png"))
         self.geometry("780x520")
         self.resizable(False, False)
         self.login_or_create_account()
@@ -127,7 +128,7 @@ class App(customtkinter.CTk):
             message_box(self, "Invalid Input",
                         "Username must be at least 5 characters long")
             return
-        with open(r"assets\login.json", "r") as f:
+        with open(fr"{PATH}\assets\login.json", "r") as f:
             accounts = json.load(f)
         if self.entry_id.get() in accounts:
             message_box(self, "Invalid Account", "Account already exists")
@@ -138,7 +139,7 @@ class App(customtkinter.CTk):
                 "plate": self.entry_plate.get(),
                 "number": self.entry_phone.get()
             }
-            with open(r"assets\login.json", "w") as f:
+            with open(fr"{PATH}\assets\login.json", "w") as f:
                 json.dump(accounts, f)
             message_box(self, "Account Created",
                         "Account created successfully")
@@ -176,7 +177,7 @@ class App(customtkinter.CTk):
         self.id = self.entry_id.get()
         self.password = self.entry_password.get()
 
-        with open(r"assets\login.json", "r") as f:
+        with open(fr"{PATH}\assets\login.json", "r") as f:
             data = json.load(f)
             try:
                 if data[self.id]["password"] == hashlib.sha256(self.password.encode()).hexdigest():
@@ -203,8 +204,10 @@ class App(customtkinter.CTk):
         self.settings_frame.pack(anchor="s", padx=20, pady=20, side="bottom")
         self.settings_frame.pack_propagate(False)
 
-        self.close_button = customtkinter.CTkButton(master=self.settings_frame, image=self.close, text="", width=10, height=10,
-                                                    fg_color=f"{self.color_1}", hover_color=f"{self.color_1}", command=self.close_settings)
+        self.close_button = customtkinter.CTkButton(master=self.settings_frame,
+                                                    image=self.close, text="", width=10, height=10,
+                                                    fg_color=f"{self.color_1}", hover_color=f"{self.color_1}",
+                                                    command=self.close_settings)
         self.close_button.pack(pady=3, padx=3, anchor="se")
 
         self.logout_button = customtkinter.CTkButton(
@@ -228,13 +231,13 @@ class App(customtkinter.CTk):
             self.color_2 = "#292929"
             self.color_3 = "gray25"
             self.iconphoto(True, tkinter.PhotoImage(
-                file=r"assets\images\logo_white.png"))
+                file=PATH+r"\assets\images\logo_white.png"))
         elif value == "Light":
             self.color_1 = "#dbdbdb"
             self.color_2 = "#ebebeb"
             self.color_3 = "#c8c7c7"
             self.iconphoto(True, tkinter.PhotoImage(
-                file=r"assets\images\logo_dark.png"))
+                file=PATH+r"\assets\images\logo_dark.png"))
         self.close_button.configure(
             fg_color=f"{self.color_1}", hover_color=f"{self.color_1}")
 
@@ -294,8 +297,10 @@ class App(customtkinter.CTk):
             master=self.frame_left, text="Journey", height=32, command=self.journey_display)
         self.button_journey.pack(pady=10, padx=10)
 
-        self.settings_button = customtkinter.CTkButton(master=self.frame_left, image=self.settings_image, text="settings", width=40, height=40,
-                                                       corner_radius=10, fg_color=f"{self.color_2}", hover_color=f"{self.color_3}", text_font=("Roboto Medium", -13),
+        self.settings_button = customtkinter.CTkButton(master=self.frame_left, image=self.settings_image,
+                                                       text="settings", width=40, height=40,
+                                                       corner_radius=10, fg_color=f"{self.color_2}",
+                                                       hover_color=f"{self.color_3}", text_font=("Roboto Medium", -13),
                                                        command=self.settings)
 
         self.settings_button.pack(anchor="sw", pady=10, padx=10, side="bottom")
@@ -316,22 +321,47 @@ class App(customtkinter.CTk):
         self.frame_dropdown = customtkinter.CTkFrame(
             master=self.frame_right, width=400, height=25)
         self.frame_dropdown.grid(row=0, column=0, pady=10, padx=10)
-        self.var = tkinter.StringVar()
-        self.var.trace_add("write", self.search_departure)
         self.entry_departure = customtkinter.CTkEntry(
-            master=self.frame_dropdown, width=400, placeholder_text="Enter departure",
-            textvariable=self.var)
+            master=self.frame_dropdown, width=400, placeholder_text="Enter departure")
         self.entry_departure.grid(row=0, column=0, pady=5, padx=5)
 
         self.button_search = customtkinter.CTkButton(
-            master=self.frame_right, text="Search", width=120, command=self.on_click)
+            master=self.frame_right, text="Search", width=120, command=self.view_results)
         self.button_search.grid(row=0, column=1, pady=15, padx=2, sticky="n")
 
+        self.button_ddd = customtkinter.CTkButton(
+            master=self.frame_dropdown, text=". . .", text_font=("Roboto Medium", 10),
+            width=300, height=25,
+            bg=f"{self.color_2}", fg_color=f"{self.color_3}", command=self.search_departure, corner_radius=5)
+        self.button_ddd.grid(row=1, column=0, pady=5, padx=5, ipadx=60)
+
+    def view_results(self):
+        self.close_search_deps()
+        self.frame_of_doom = customtkinter.CTkFrame(master=self.frame_right)
+        self.frame_of_doom.grid(row=1, column=0, pady=10,
+                                padx=10, sticky="nswe", columnspan=2, ipady=100)
+        self.frame_of_doom.pack_propagate(False)
+        self.stop = rtadubai.Stop(self.entry_departure.get())
+        self.deps = rtadubai.Shail.departures(self.stop)
+        for i in self.deps:
+
+            self.frame_deps = customtkinter.CTkFrame(master=self.frame_of_doom,height=50,corner_radius=0)
+            self.frame_deps.pack(pady=10, padx=10,fill="x")
+            self.frame_deps.pack_propagate(False)
+
+            self.indicator_color = customtkinter.CTkFrame(master=self.frame_deps,bg_color="#1ab450",fg_color="#1ab450", width=5)
+            self.indicator_color.pack(side="left", padx=0, pady=0,fill="y")
 
     def on_click(self, event):
-        print("clicked")
+        self.entry_departure.delete(0, "end")
+        self.entry_departure.insert(0, event)
 
-    def search_departure(self, *args):
+
+    def search_departure(self):
+        try:
+            self.frame_of_doom.destroy()
+        except:
+            pass
         _c = 0
         for widgets in self.frame_dropdown.winfo_children():
             if _c == 0:
@@ -341,23 +371,47 @@ class App(customtkinter.CTk):
             _c += 1
 
         self.data_dep = self.entry_departure.get()
-        self.entry_departure.delete(0, "end")
-
 
         self.frame_dropdown.configure(height=720)
         self.frame_dropdown.update()
-        s = rtadubai.Shail.findstop(self.var.get())
+        s = rtadubai.Shail.findstop(self.data_dep)
         self.list_of_deps = []
         for i in s:
             self.list_of_deps.append(i['name'])
-        c = 1
+        c = 2
         for i in self.list_of_deps:
             self.label_deps_dropdown = customtkinter.CTkButton(
-                master=self.frame_dropdown, width=300, height=25, text=i, text_font=("Roboto Medium", -9), bg=f"{self.color_2}",fg_color=f"{self.color_3}", command=self.on_click, corner_radius=5)
-            self.label_deps_dropdown.grid(row=c, column=0, pady=3, padx=3,ipadx=60)
-            c += 1
-        
+                master=self.frame_dropdown, width=300, height=25, text=i, text_font=("Roboto Medium", -10),
+                bg=f"{self.color_2}", fg_color=f"{self.color_3}", command=lambda i=i: self.on_click(i), corner_radius=5)
+            self.label_deps_dropdown.grid(
+                row=c, column=0, pady=3, padx=3, ipadx=60)
+            c += 2
+        self.button_ddd = customtkinter.CTkButton(
+            master=self.frame_dropdown, text="Close", text_font=("Roboto Medium", 10),
+            width=300, height=25,
+            bg=f"{self.color_2}", fg_color="#C41E3A", hover_color="#D56376", command=self.close_search_deps, corner_radius=5)
+        self.button_ddd.grid(row=1, column=0, pady=5, padx=5, ipadx=60)
+        self.button_dn = customtkinter.CTkButton(
+            master=self.frame_dropdown, text="Refresh", text_font=("Roboto Medium", 10),
+            width=300, height=25,
+            command=self.search_departure, corner_radius=5)
+        self.button_dn.grid(row=2, column=0, pady=5, padx=5, ipadx=60)
 
+    def close_search_deps(self):
+        _c = 0
+        for widgets in self.frame_dropdown.winfo_children():
+            if _c == 0:
+                pass
+            else:
+                widgets.destroy()
+            _c += 1
+        self.frame_dropdown.configure(height=25)
+        self.frame_dropdown.update()
+        self.button_ddd = customtkinter.CTkButton(
+            master=self.frame_dropdown, text=". . .", text_font=("Roboto Medium", 10),
+            width=300, height=25,
+            bg=f"{self.color_2}", fg_color=f"{self.color_3}", command=self.search_departure, corner_radius=5)
+        self.button_ddd.grid(row=1, column=0, pady=5, padx=5, ipadx=60)
 
     def nol_display(self):
 
