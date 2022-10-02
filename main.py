@@ -317,19 +317,63 @@ class App(customtkinter.CTk):
 
     def view_results(self):
         self.close_search_deps()
-        self.frame_of_doom = customtkinter.CTkFrame(master=self.frame_right)
-        self.frame_of_doom.grid(row=1, column=0, pady=10, padx=10, sticky="nswe", columnspan=2, ipady=100)
-        self.frame_of_doom.pack_propagate(False)
+        self.scroll_canvas = customtkinter.CTkCanvas(master=self.frame_right, highlightbackground=f"{self.color_2}",bg=f"{self.color_2}")
+        self.scroll_canvas.grid(row=1, column=0, pady=10, padx=10, sticky="nswe", columnspan=2, ipady=100)
+
+        self.my_scroll = customtkinter.CTkScrollbar(master=self.scroll_canvas, orientation="vertical", command=self.scroll_canvas.yview)
+        self.my_scroll.pack(fill="y", side="right")
+
+        self.scroll_canvas.configure(yscrollcommand=self.my_scroll.set)
+        self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
+        self.scroll_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+        self.frame_of_doom = customtkinter.CTkFrame(master=self.scroll_canvas,corner_radius=0)
+        self.scroll_canvas.create_window((0, 0), window=self.frame_of_doom, anchor="nw", width=652)
         self.stop = rtadubai.Stop(self.entry_departure.get())
         self.deps = rtadubai.Shail.departures(self.stop)
         for i in self.deps:
 
-            self.frame_deps = customtkinter.CTkFrame(master=self.frame_of_doom, height=50, corner_radius=0)
+            self.frame_deps = customtkinter.CTkFrame(master=self.frame_of_doom, height=75, corner_radius=0)
             self.frame_deps.pack(pady=10, padx=10, fill="x")
             self.frame_deps.pack_propagate(False)
 
-            self.indicator_color = customtkinter.CTkFrame(master=self.frame_deps, bg_color="#1ab450", fg_color="#1ab450", width=5)
+            if i["status"] == "On Time":
+                self.ind_color_hex = "#1ab450"
+            else:
+                self.ind_color_hex = "#ec0404"
+
+            self.indicator_color = customtkinter.CTkFrame(master=self.frame_deps, bg_color=f"{self.ind_color_hex}", fg_color=f"{self.ind_color_hex}", width=5)
             self.indicator_color.pack(side="left", padx=0, pady=0, fill="y")
+
+            self.icon_frame = customtkinter.CTkFrame(master=self.frame_deps, width=50, height=50, corner_radius=0,fg_color=f"{self.color_1}")
+            self.icon_frame.pack(side="left", padx=10, pady=0)
+
+            self.train_icon = customtkinter.CTkButton(master=self.icon_frame,text="",state="diabled",fg_color=f"{self.color_1}", image=self.load_image(r"\assets\images\dep_icon.png",40,40), width=40, height=40)
+            self.train_icon.grid(row=0, column=0, pady=0, padx=0)
+
+            self.mode = customtkinter.CTkButton(master=self.icon_frame, text=i["mode"],text_color="#ffffff", text_font=("Roboto Medium", -11), fg_color=f"#191465", bg_color=f"#191465", corner_radius=0, width=10, height=15, state="disabled")
+            self.mode.grid(row=1, column=0, pady=0, padx=0)
+
+            self.info_frame = customtkinter.CTkFrame(master=self.frame_deps, width=200, height=50, corner_radius=0)
+            self.info_frame.pack(side="left", padx=10, pady=5)
+
+            self.str_direction_label = customtkinter.CTkLabel(master=self.info_frame, text="Direction", text_font=("Roboto Medium", -10))
+            self.str_direction_label.grid(row=0, column=0, pady=0, padx=0, sticky="w")
+
+            self.label_dep = customtkinter.CTkLabel(master=self.info_frame, text=i["direction"], text_font=("Roboto Medium", -12))
+            self.label_dep.grid(row=1, column=0, pady=0, padx=0, sticky="w")
+
+            self.str_scheduled_label = customtkinter.CTkLabel(master=self.info_frame, text="Scheduled Time", text_font=("Roboto Medium", -10))
+            self.str_scheduled_label.grid(row=0, column=2, pady=0, padx=0, sticky="e")
+
+            self.scheduled_label = customtkinter.CTkLabel(master=self.info_frame, text=i["scheduled_time"], text_font=("Roboto Medium", -12))
+            self.scheduled_label.grid(row=1, column=2, pady=0, padx=0, sticky="e")
+
+            self.str_estimated_label = customtkinter.CTkLabel(master=self.info_frame, text="Estimated Time", text_font=("Roboto Medium", -10))
+            self.str_estimated_label.grid(row=0, column=3, pady=0, padx=0, sticky="e")
+
+            self.estimated_label = customtkinter.CTkLabel(master=self.info_frame, text=i["estimated_time"], text_font=("Roboto Medium", -12))
+            self.estimated_label.grid(row=1, column=3, pady=0, padx=0, sticky="e")
 
     def on_click(self, event):
         self.entry_departure.delete(0, "end")
@@ -400,6 +444,8 @@ class App(customtkinter.CTk):
             else:
                 widgets.destroy()
             _c += 1
+        try:self.my_scroll.destroy()
+        except:pass
         self.frame_dropdown.configure(height=25)
         self.frame_dropdown.update()
         self.button_ddd = customtkinter.CTkButton(
@@ -469,11 +515,12 @@ class App(customtkinter.CTk):
             self.scroll_canvas = customtkinter.CTkCanvas(master=self.frame_right, highlightbackground=f"{self.color_2}")
             self.scroll_canvas.pack(fill="both", expand=True, side="left")
 
-            my_scroll = customtkinter.CTkScrollbar(master=self.frame_right, orientation="vertical", command=self.scroll_canvas.yview)
-            my_scroll.pack(fill="y", side="right")
+            self.my_scroll = customtkinter.CTkScrollbar(master=self.frame_right, orientation="vertical", command=self.scroll_canvas.yview)
+            self.my_scroll.pack(fill="y", side="right")
 
-            self.scroll_canvas.configure(yscrollcommand=my_scroll.set)
+            self.scroll_canvas.configure(yscrollcommand=self.my_scroll.set)
             self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
+            self.scroll_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 
             self.transaction_frame = customtkinter.CTkFrame(master=self.scroll_canvas, corner_radius=0)
 
@@ -518,7 +565,8 @@ class App(customtkinter.CTk):
                 self._text, self._size = self._split(i["Type"])
                 self.temp_label_4 = customtkinter.CTkLabel(master=self.frame_frame_4, text=self._text, text_font=("Roboto Medium", self._size))
                 self.temp_label_4.pack(side="left", padx=10, pady=10)
-
+    def _on_mousewheel(self, event):
+        self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     def _split(self, text):
 
         if len(text) > 38:
@@ -575,3 +623,4 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     app = App()
     app.run()
+
