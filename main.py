@@ -31,9 +31,22 @@ class App(customtkinter.CTk):
         self.iconphoto(True, tkinter.PhotoImage(file=PATH + r"\assets\images\logo_white.png"))
         self.geometry("780x520")
         self.resizable(False, False)
+        self.set_theme("dark")
         self.start_menu()
 
+<<<<<<< Updated upstream
     # ==================================MENUS==================================
+=======
+    def set_theme(self, theme):
+        if theme == "dark":
+            self.colors = ["#ffffff", "#8a8a8a", "#000000"]
+        elif theme == "light":
+            self.colors = ["#000000", "#8a8a8a", "gray25"]
+        self.color_button_base = self.colors[0]
+        self.color_button_hover = self.colors[1]
+        self.color_button_text = self.colors[2]
+# ==================================MENUS==================================
+>>>>>>> Stashed changes
 
     def start_menu(self):
         self.grid_columnconfigure(0, weight=1)
@@ -45,10 +58,23 @@ class App(customtkinter.CTk):
         self.label_loca = customtkinter.CTkLabel(master=self.frame_loca, text="TravelManager", text_font=("Roboto Medium", 30))
         self.label_loca.pack(pady=70)
 
+<<<<<<< Updated upstream
         self.login_button = customtkinter.CTkButton(master=self.frame_loca, text="Login", command=self.login_menu)
         self.login_button.pack(pady=10)
 
         self.create_account_button = customtkinter.CTkButton(master=self.frame_loca, text="Create Account", command=self.create_account_menu)
+=======
+        self.login_button = customtkinter.CTkButton(
+            master=self.frame_loca, text="Login", command=self.login_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+        self.login_button.pack(pady=10)
+
+        self.create_account_button = customtkinter.CTkButton(
+            master=self.frame_loca, text="Create Account", command=self.create_account_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+>>>>>>> Stashed changes
         self.create_account_button.pack(pady=10)
 
     def login_menu(self):
@@ -71,7 +97,14 @@ class App(customtkinter.CTk):
             self.entry_password = customtkinter.CTkEntry(master=self.frame_login, width=200, show="*", placeholder_text="Password")
             self.entry_password.pack(pady=10)
 
+<<<<<<< Updated upstream
             self.button_login = customtkinter.CTkButton(master=self.frame_login, text="Login", command=lambda: login(self))
+=======
+            self.button_login = customtkinter.CTkButton(
+                master=self.frame_login, text="Login", command=lambda: login(self),
+                fg_color=self.color_button_base, hover_color=self.color_button_hover,
+                text_color=self.color_button_text)
+>>>>>>> Stashed changes
             self.button_login.pack(pady=10)
 
         def login(self):
@@ -129,8 +162,14 @@ class App(customtkinter.CTk):
             self.entry_phone.pack(pady=10)
 
             self.button_create_account = customtkinter.CTkButton(
+<<<<<<< Updated upstream
                 master=self.frame_create_account, text="Create Account", command=lambda: create_account(self)
             )
+=======
+                master=self.frame_create_account, text="Create Account", command=lambda: create_account(self),
+                fg_color=self.color_button_base, hover_color=self.color_button_hover,
+                text_color=self.color_button_text)
+>>>>>>> Stashed changes
             self.button_create_account.pack(pady=20)
 
         def create_account(self):
@@ -192,6 +231,7 @@ class App(customtkinter.CTk):
         self.label_main = customtkinter.CTkLabel(master=self.frame_left, text="TravelManager", text_font=("Roboto Medium", -18))
         self.label_main.pack(pady=20, padx=20, anchor="center")
 
+<<<<<<< Updated upstream
         self.button_nol = customtkinter.CTkButton(master=self.frame_left, text="Nol", height=32, command=self.nol_menu)
         self.button_nol.pack(padx=10, pady=15)
 
@@ -202,6 +242,30 @@ class App(customtkinter.CTk):
         self.button_departure.pack(pady=10, padx=10)
 
         self.button_journey = customtkinter.CTkButton(master=self.frame_left, text="Journey", height=32, command=self.journey_planner_menu)
+=======
+        self.button_nol = customtkinter.CTkButton(
+            master=self.frame_left, text="Nol", height=32, command=self.nol_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+        self.button_nol.pack(padx=10, pady=15)
+
+        self.button_salik = customtkinter.CTkButton(
+            master=self.frame_left, text="Salik", height=32, command=self.salik_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+        self.button_salik.pack(pady=10, padx=10)
+
+        self.button_departure = customtkinter.CTkButton(
+            master=self.frame_left, text="Departure", height=32, command=self.departure_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+        self.button_departure.pack(pady=10, padx=10)
+
+        self.button_journey = customtkinter.CTkButton(
+            master=self.frame_left, text="Journey", height=32, command=self.journey_planner_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+>>>>>>> Stashed changes
         self.button_journey.pack(pady=10, padx=10)
 
         self.settings_button = customtkinter.CTkButton(
@@ -257,7 +321,15 @@ class App(customtkinter.CTk):
         self.pendings_show = customtkinter.CTkLabel(master=self.frame_display_right_3, text=f"{self.nol.pending}", text_font=("Roboto Medium", 25))
         self.pendings_show.pack(padx=20, pady=20)
 
+<<<<<<< Updated upstream
         self.view_transactions = customtkinter.CTkButton(master=self.frame_right, text="View Transactions", command=self.transaction_menu)
+=======
+        self.view_transactions = customtkinter.CTkButton(
+            master=self.frame_right, text="View Transactions", command=self.transaction_menu,
+            fg_color=self.color_button_base, hover_color=self.color_button_hover,
+            text_color=self.color_button_text)
+
+>>>>>>> Stashed changes
         self.view_transactions.pack(anchor="center", pady=10, padx=10)
 
     def transaction_menu(self):
@@ -382,8 +454,7 @@ class App(customtkinter.CTk):
     def departure_menu(self):
         def departure_display(self):
 
-            for widgets in self.frame_right.winfo_children():
-                widgets.destroy()
+            self.del_right_frame()
 
             self.frame_right.pack_propagate(False)
             self.frame_dropdown = customtkinter.CTkFrame(master=self.frame_right, width=400, height=25)
@@ -582,11 +653,20 @@ class App(customtkinter.CTk):
         departure_display(self)
 
     def journey_planner_menu(self):
-        pass
+        def journey_planner_display(self):
+            self.del_right_frame()
+
+            self.button_starting_point = customtkinter.CTkEntry(
+                master=self.frame_right, placeholder_text="Starting Point", width=300, height=25, corner_radius=5)
+            self.button_starting_point.grid(row=0, column=0, pady=5, padx=5)
+
+            self.button_destination = customtkinter.CTkEntry(
+                master=self.frame_right, placeholder_text="Destination", width=300, height=25, corner_radius=5)
+            self.button_destination.grid(row=1, column=0, pady=5, padx=5)
+        journey_planner_display(self)
 
     def settings_menu(self):
         def settings(self):
-
             self.settings_button.destroy()
 
             self.settings_frame = customtkinter.CTkFrame(master=self.frame_left, width=140, height=150, corner_radius=5)
@@ -605,17 +685,33 @@ class App(customtkinter.CTk):
             )
             self.close_button.pack(pady=3, padx=3, anchor="se")
 
+<<<<<<< Updated upstream
             self.logout_button = customtkinter.CTkButton(master=self.settings_frame, text="Logout", command=lambda: logout(self))
+=======
+            self.logout_button = customtkinter.CTkButton(
+                master=self.settings_frame, text="Logout", command=lambda: logout(self),
+                fg_color=self.color_button_base, hover_color=self.color_button_hover,
+                text_color=self.color_button_text)
+>>>>>>> Stashed changes
             self.logout_button.pack(pady=0, padx=20)
 
             self.change_details_button = customtkinter.CTkButton(
-                master=self.settings_frame, text="Change Detail", command=lambda: print("Change Details")
-            )
+                master=self.settings_frame, text="Change Detail", command=lambda: print("Change Details",),
+                fg_color=self.color_button_base, hover_color=self.color_button_hover,
+                text_color=self.color_button_text)
             self.change_details_button.pack(pady=10, padx=20)
 
+<<<<<<< Updated upstream
             self.optionmenu_1 = customtkinter.CTkOptionMenu(
                 master=self.settings_frame, values=["Dark", "Light"], command=lambda x: change_appearance_mode(self, x)
             )
+=======
+            self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.settings_frame, values=[
+                                                            "Dark", "Light"], command=lambda x: change_appearance_mode(self, x),
+                                                            text_color=self.color_button_text, fg_color=self.color_button_base,
+                                                             dropdown_hover_color=self.color_button_hover, dropdown_text_color=self.color_button_text,
+                                                              button_color=self.color_button_base, button_hover_color=self.color_button_hover)
+>>>>>>> Stashed changes
             self.optionmenu_1.pack(pady=0, padx=20)
 
         def change_appearance_mode(self, value):
@@ -650,7 +746,7 @@ class App(customtkinter.CTk):
                 fg_color=f"{self.color_2}",
                 hover_color=f"{self.color_3}",
                 text_font=("Roboto Medium", -13),
-                command=settings(self),
+                command=lambda: settings(self),
             )
 
             self.settings_button.pack(anchor="sw", pady=10, padx=10, side="bottom")
