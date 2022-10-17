@@ -1,14 +1,13 @@
 # =================================IMPORTS=================================
 
-import tkinter
-import tkinter.messagebox
-import customtkinter
-import rtadubai
-import json
-import hashlib
-from PIL import Image, ImageTk
-import os
-from message_box import message_box
+import tkinter # GUI
+import customtkinter # Custom GUI
+import rtadubai #RTA STUFF
+import json # STORAGE
+import hashlib # HASHING PASSWORD
+from PIL import Image, ImageTk # OPENING IMAGES
+import os # FILE PATHS
+from message_box import message_box # CUSTOM MESSAGE BOX
 
 # ==============================MISCELLANEOUS==============================
 
